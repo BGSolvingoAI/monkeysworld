@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Monkeys World</title>
+  <title>Monkeys World - Infinite Runner</title>
   <style>
-    /* Basic styling */
     body {
       margin: 0;
       padding: 0;
@@ -13,7 +12,7 @@
     canvas {
       display: block;
       margin: 0 auto;
-      background: #87CEEB; /* Fallback background for the game area */
+      background: #87CEEB;
     }
   </style>
 </head>
@@ -33,32 +32,33 @@ class TitleScene extends Phaser.Scene {
 
   preload() {
     // Load images for both characters
-    this.load.image('blaire', 'assets/daughter.png'); 
-    this.load.image('drew', 'assets/son.png'); 
-    // NOTE: Audio loading removed
+    this.load.image('blaire', 'assets/daughter.png');
+    this.load.image('drew', 'assets/son.png');
   }
 
   create() {
     // Title text
-    this.add.text(200, 100, "Monkeys World", {
-      fontSize: '48px',
+    this.add.text(160, 100, "Monkeys World (Infinite Runner)", {
+      fontSize: '32px',
       fill: '#000',
       fontStyle: 'bold'
     });
 
     // Character selection instructions
-    this.add.text(120, 250, "Choose Your Character:", {
-      fontSize: '32px',
+    this.add.text(140, 250, "Choose Your Character:", {
+      fontSize: '28px',
       fill: '#000'
     });
-    this.add.text(140, 320, "Press 1 for Blaire", {
+    this.add.text(160, 320, "Press 1 for Blaire", {
       fontSize: '24px',
       fill: '#000'
     });
-    this.add.text(140, 360, "Press 2 for Drew", {
+    this.add.text(160, 360, "Press 2 for Drew", {
       fontSize: '24px',
       fill: '#000'
     });
+
+    // Debug text so we know TitleScene loaded
     this.add.text(20, 20, "TitleScene loaded!", {
       fontSize: '16px',
       fill: '#fff'
@@ -79,73 +79,61 @@ class TitleScene extends Phaser.Scene {
   }
 
   startGame(characterKey) {
-    // Transition to Level1 with initial data
-    this.scene.start('Level1', { character: characterKey, level: 1, score: 0 });
+    this.scene.start('RunnerScene', { character: characterKey });
   }
 }
 
 // -----------------------------------------------------------------------------
-// SCENE: Level1
+// SCENE: RunnerScene (Infinite Runner)
 // -----------------------------------------------------------------------------
-class Level1 extends Phaser.Scene {
+class RunnerScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'Level1' });
+    super({ key: 'RunnerScene' });
   }
 
   init(data) {
-    this.characterKey = data.character || 'blaire'; 
-    this.level = data.level || 1;
-    this.score = data.score || 0;
+    // Which character did we pick?
+    this.characterKey = data.character || 'blaire';
   }
 
   create() {
-    // Game dimensions
-    this.gameWidth = this.sys.game.config.width;
-    this.gameHeight = this.sys.game.config.height;
+    // Basic setup
+    this.gameWidth = this.sys.game.config.width;   // 800
+    this.gameHeight = this.sys.game.config.height; // 600
 
-    // Create player sprite based on chosen character
+    // Create the player sprite at x=100, y=450
     this.player = this.physics.add.sprite(100, 450, this.characterKey);
     this.player.setCollideWorldBounds(true);
     this.player.setScale(0.5);
 
-    // Ground
+    // Create ground as an invisible rectangle
+    // so the player doesn't fall through
     this.ground = this.add.rectangle(
-      this.gameWidth / 2,
-      this.gameHeight - 20,
-      this.gameWidth,
+      this.gameWidth / 2,  // x = 400
+      this.gameHeight - 20, // y = 580
+      this.gameWidth,       // 800
       40,
       0x654321
     );
     this.physics.add.existing(this.ground, true);
     this.physics.add.collider(this.player, this.ground);
 
-    // Obstacles group
+    // We'll keep the player stationary (no horizontal velocity)
+    // and spawn obstacles from the right side moving left.
+    // This creates the "infinite runner" feel.
+
+    // Group for obstacles
     this.obstacles = this.physics.add.group();
+    // Collide obstacles with the ground so they rest on it (if we had gravity)
     this.physics.add.collider(this.obstacles, this.ground);
+    // Overlap check to see if the player collides with an obstacle
     this.physics.add.overlap(this.player, this.obstacles, this.hitObstacle, null, this);
 
-    // Collectibles group (for 🤟 emoji)
-    this.collectibles = this.physics.add.group();
-    this.physics.add.collider(this.collectibles, this.ground);
-    this.physics.add.overlap(this.player, this.collectibles, this.collectItem, null, this);
-
-    // Score text
-    this.scoreText = this.add.text(16, 16, 'Score: ' + this.score, {
+    // Score
+    this.score = 0;
+    this.scoreText = this.add.text(16, 16, 'Score: 0', {
       fontSize: '32px',
       fill: '#000'
-    });
-
-    // Timer
-    this.levelDuration = 120; // 2 minutes
-    this.timerText = this.add.text(650, 16, 'Time: ' + this.levelDuration, {
-      fontSize: '32px',
-      fill: '#000'
-    });
-    this.time.addEvent({
-      delay: 1000,
-      callback: this.updateTimer,
-      callbackScope: this,
-      loop: true
     });
 
     // Input for jump
@@ -153,393 +141,65 @@ class Level1 extends Phaser.Scene {
     this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.spaceKey.on('down', () => this.jump());
 
-    // Spawn obstacles every 1.5 seconds
+    // Spawn obstacles on a timer
     this.time.addEvent({
-      delay: 1500,
+      delay: 1500, // spawn every 1.5 seconds
       callback: this.addObstacle,
       callbackScope: this,
       loop: true
     });
 
-    // Spawn collectibles (🤟) every 3 seconds
-    this.time.addEvent({
-      delay: 3000,
-      callback: this.addCollectible,
-      callbackScope: this,
-      loop: true
-    });
-
     // Debug text
-    this.add.text(20, 60, "Level1 loaded!", {
+    this.add.text(20, 60, "RunnerScene loaded!", {
       fontSize: '16px',
       fill: '#fff'
     });
   }
 
   update() {
-    // Auto-run
-    this.player.setVelocityX(200);
+    // Keep the player in place (no horizontal velocity)
+    this.player.setVelocityX(0);
   }
 
   jump() {
+    // Jump only if touching the ground
     if (this.player.body.touching.down) {
       this.player.setVelocityY(-400);
     }
   }
 
   addObstacle() {
-    // Randomly choose between hockey net (🥅) or lacrosse stick (🥍)
-    const obstacleEmoji = Math.random() < 0.5 ? "🥅" : "🥍";
-    const obstacle = this.add.text(this.gameWidth, 520, obstacleEmoji, {
+    // All obstacles must be jumped over
+    // We'll pick randomly from an array of emojis
+    const obstacleOptions = ["🥅", "🥍", "🤟"]; // hockey net, lacrosse stick, i love you
+    const emoji = obstacleOptions[Math.floor(Math.random() * obstacleOptions.length)];
+
+    // Create a text object at x=800 (off-screen to the right)
+    // y=520 so it appears near the ground
+    const obstacle = this.add.text(800, 520, emoji, {
       fontSize: '64px'
     });
     this.physics.add.existing(obstacle);
-    obstacle.body.setVelocityX(-250);
+
+    // Move left so the player has to jump over it
+    obstacle.body.setVelocityX(-200);
     obstacle.body.setAllowGravity(false);
+
+    // Add to obstacles group
     this.obstacles.add(obstacle);
   }
 
-  addCollectible() {
-    // Spawn the "I love you" sign language emoji 🤟
-    const collectible = this.add.text(this.gameWidth, 480, '🤟', {
-      fontSize: '48px'
-    });
-    this.physics.add.existing(collectible);
-    collectible.body.setVelocityX(-200);
-    collectible.body.setAllowGravity(false);
-    this.collectibles.add(collectible);
-  }
-
   hitObstacle(player, obstacle) {
-    // If the player is above the obstacle => successful jump
+    // Check if the player is above the obstacle => successful jump
+    // We do this by comparing positions at the moment of overlap
     if (player.y < obstacle.y) {
+      // If above, we treat it as a successful jump
       this.score += 10;
       this.scoreText.setText('Score: ' + this.score);
       obstacle.destroy();
     } else {
-      // Game over
+      // Otherwise, game over
       this.scene.start('GameOverScene', { score: this.score });
-    }
-  }
-
-  collectItem(player, collectible) {
-    // Collect 🤟 => +20 points
-    this.score += 20;
-    this.scoreText.setText('Score: ' + this.score);
-    collectible.destroy();
-  }
-
-  updateTimer() {
-    this.levelDuration--;
-    this.timerText.setText('Time: ' + this.levelDuration);
-    if (this.levelDuration <= 0) {
-      // Go to Level2
-      this.scene.start('Level2', {
-        character: this.characterKey,
-        level: 2,
-        score: this.score
-      });
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-// SCENE: Level2
-// -----------------------------------------------------------------------------
-class Level2 extends Phaser.Scene {
-  constructor() {
-    super({ key: 'Level2' });
-  }
-
-  init(data) {
-    this.characterKey = data.character || 'blaire';
-    this.level = data.level || 2;
-    this.score = data.score || 0;
-  }
-
-  create() {
-    this.gameWidth = this.sys.game.config.width;
-    this.gameHeight = this.sys.game.config.height;
-
-    // Player
-    this.player = this.physics.add.sprite(100, 450, this.characterKey);
-    this.player.setCollideWorldBounds(true);
-    this.player.setScale(0.5);
-
-    // Ground
-    this.ground = this.add.rectangle(
-      this.gameWidth / 2,
-      this.gameHeight - 20,
-      this.gameWidth,
-      40,
-      0x654321
-    );
-    this.physics.add.existing(this.ground, true);
-    this.physics.add.collider(this.player, this.ground);
-
-    // Obstacles
-    this.obstacles = this.physics.add.group();
-    this.physics.add.collider(this.obstacles, this.ground);
-    this.physics.add.overlap(this.player, this.obstacles, this.hitObstacle, null, this);
-
-    // Collectibles
-    this.collectibles = this.physics.add.group();
-    this.physics.add.collider(this.collectibles, this.ground);
-    this.physics.add.overlap(this.player, this.collectibles, this.collectItem, null, this);
-
-    // Score text
-    this.scoreText = this.add.text(16, 16, 'Score: ' + this.score, {
-      fontSize: '32px',
-      fill: '#000'
-    });
-
-    // Timer
-    this.levelDuration = 120;
-    this.timerText = this.add.text(650, 16, 'Time: ' + this.levelDuration, {
-      fontSize: '32px',
-      fill: '#000'
-    });
-    this.time.addEvent({
-      delay: 1000,
-      callback: this.updateTimer,
-      callbackScope: this,
-      loop: true
-    });
-
-    // Input
-    this.input.on('pointerdown', () => this.jump());
-    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    this.spaceKey.on('down', () => this.jump());
-
-    // More frequent obstacles
-    this.time.addEvent({
-      delay: 1200,
-      callback: this.addObstacle,
-      callbackScope: this,
-      loop: true
-    });
-
-    // Collectibles (🤟)
-    this.time.addEvent({
-      delay: 2500,
-      callback: this.addCollectible,
-      callbackScope: this,
-      loop: true
-    });
-
-    // Debug
-    this.add.text(20, 60, "Level2 loaded!", {
-      fontSize: '16px',
-      fill: '#fff'
-    });
-  }
-
-  update() {
-    // Faster run
-    this.player.setVelocityX(250);
-  }
-
-  jump() {
-    if (this.player.body.touching.down) {
-      this.player.setVelocityY(-420);
-    }
-  }
-
-  addObstacle() {
-    const obstacleEmoji = Math.random() < 0.5 ? "🥅" : "🥍";
-    const obstacle = this.add.text(this.gameWidth, 520, obstacleEmoji, {
-      fontSize: '64px'
-    });
-    this.physics.add.existing(obstacle);
-    obstacle.body.setVelocityX(-300);
-    obstacle.body.setAllowGravity(false);
-    this.obstacles.add(obstacle);
-  }
-
-  addCollectible() {
-    const collectible = this.add.text(this.gameWidth, 480, '🤟', {
-      fontSize: '48px'
-    });
-    this.physics.add.existing(collectible);
-    collectible.body.setVelocityX(-220);
-    collectible.body.setAllowGravity(false);
-    this.collectibles.add(collectible);
-  }
-
-  hitObstacle(player, obstacle) {
-    if (player.y < obstacle.y) {
-      this.score += 10;
-      this.scoreText.setText('Score: ' + this.score);
-      obstacle.destroy();
-    } else {
-      this.scene.start('GameOverScene', { score: this.score });
-    }
-  }
-
-  collectItem(player, collectible) {
-    this.score += 20;
-    this.scoreText.setText('Score: ' + this.score);
-    collectible.destroy();
-  }
-
-  updateTimer() {
-    this.levelDuration--;
-    this.timerText.setText('Time: ' + this.levelDuration);
-    if (this.levelDuration <= 0) {
-      this.scene.start('Level3', {
-        character: this.characterKey,
-        level: 3,
-        score: this.score
-      });
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-// SCENE: Level3
-// -----------------------------------------------------------------------------
-class Level3 extends Phaser.Scene {
-  constructor() {
-    super({ key: 'Level3' });
-  }
-
-  init(data) {
-    this.characterKey = data.character || 'blaire';
-    this.level = data.level || 3;
-    this.score = data.score || 0;
-  }
-
-  create() {
-    this.gameWidth = this.sys.game.config.width;
-    this.gameHeight = this.sys.game.config.height;
-
-    // Player
-    this.player = this.physics.add.sprite(100, 450, this.characterKey);
-    this.player.setCollideWorldBounds(true);
-    this.player.setScale(0.5);
-
-    // Ground
-    this.ground = this.add.rectangle(
-      this.gameWidth / 2,
-      this.gameHeight - 20,
-      this.gameWidth,
-      40,
-      0x654321
-    );
-    this.physics.add.existing(this.ground, true);
-    this.physics.add.collider(this.player, this.ground);
-
-    // Obstacles
-    this.obstacles = this.physics.add.group();
-    this.physics.add.collider(this.obstacles, this.ground);
-    this.physics.add.overlap(this.player, this.obstacles, this.hitObstacle, null, this);
-
-    // Collectibles
-    this.collectibles = this.physics.add.group();
-    this.physics.add.collider(this.collectibles, this.ground);
-    this.physics.add.overlap(this.player, this.collectibles, this.collectItem, null, this);
-
-    // Score text
-    this.scoreText = this.add.text(16, 16, 'Score: ' + this.score, {
-      fontSize: '32px',
-      fill: '#000'
-    });
-
-    // Timer
-    this.levelDuration = 120;
-    this.timerText = this.add.text(650, 16, 'Time: ' + this.levelDuration, {
-      fontSize: '32px',
-      fill: '#000'
-    });
-    this.time.addEvent({
-      delay: 1000,
-      callback: this.updateTimer,
-      callbackScope: this,
-      loop: true
-    });
-
-    // Input
-    this.input.on('pointerdown', () => this.jump());
-    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    this.spaceKey.on('down', () => this.jump());
-
-    // Even more frequent obstacles
-    this.time.addEvent({
-      delay: 1000,
-      callback: this.addObstacle,
-      callbackScope: this,
-      loop: true
-    });
-
-    // Collectibles (🤟)
-    this.time.addEvent({
-      delay: 2000,
-      callback: this.addCollectible,
-      callbackScope: this,
-      loop: true
-    });
-
-    // Debug
-    this.add.text(20, 60, "Level3 loaded!", {
-      fontSize: '16px',
-      fill: '#fff'
-    });
-  }
-
-  update() {
-    // Even faster run
-    this.player.setVelocityX(300);
-  }
-
-  jump() {
-    if (this.player.body.touching.down) {
-      this.player.setVelocityY(-450);
-    }
-  }
-
-  addObstacle() {
-    const obstacleEmoji = Math.random() < 0.5 ? "🥅" : "🥍";
-    const obstacle = this.add.text(this.gameWidth, 520, obstacleEmoji, {
-      fontSize: '64px'
-    });
-    this.physics.add.existing(obstacle);
-    obstacle.body.setVelocityX(-350);
-    obstacle.body.setAllowGravity(false);
-    this.obstacles.add(obstacle);
-  }
-
-  addCollectible() {
-    const collectible = this.add.text(this.gameWidth, 480, '🤟', {
-      fontSize: '48px'
-    });
-    this.physics.add.existing(collectible);
-    collectible.body.setVelocityX(-250);
-    collectible.body.setAllowGravity(false);
-    this.collectibles.add(collectible);
-  }
-
-  hitObstacle(player, obstacle) {
-    if (player.y < obstacle.y) {
-      this.score += 10;
-      this.scoreText.setText('Score: ' + this.score);
-      obstacle.destroy();
-    } else {
-      this.scene.start('GameOverScene', { score: this.score });
-    }
-  }
-
-  collectItem(player, collectible) {
-    this.score += 20;
-    this.scoreText.setText('Score: ' + this.score);
-    collectible.destroy();
-  }
-
-  updateTimer() {
-    this.levelDuration--;
-    this.timerText.setText('Time: ' + this.levelDuration);
-    if (this.levelDuration <= 0) {
-      // Survived all 3 levels => "victory"
-      this.scene.start('GameOverScene', { score: this.score, victory: true });
     }
   }
 }
@@ -554,13 +214,11 @@ class GameOverScene extends Phaser.Scene {
 
   init(data) {
     this.finalScore = data.score || 0;
-    this.victory = data.victory || false;
   }
 
   create() {
-    const message = this.victory ? "You completed all levels!" : "Game Over!";
-
-    this.add.text(200, 200, message, {
+    // Show Game Over & Score
+    this.add.text(200, 200, "Game Over!", {
       fontSize: '48px',
       fill: '#000',
       fontStyle: 'bold'
@@ -571,11 +229,12 @@ class GameOverScene extends Phaser.Scene {
       fill: '#000'
     });
 
-    this.add.text(150, 400, "Tap or Press SPACE to Restart", {
+    this.add.text(160, 400, "Tap or Press SPACE to Restart", {
       fontSize: '24px',
       fill: '#000'
     });
 
+    // Restart on input
     this.input.keyboard.on('keydown-SPACE', () => {
       this.restartGame();
     });
@@ -585,7 +244,6 @@ class GameOverScene extends Phaser.Scene {
   }
 
   restartGame() {
-    // Return to TitleScene
     this.scene.start('TitleScene');
   }
 }
@@ -605,10 +263,10 @@ const config = {
       debug: false
     }
   },
-  scene: [TitleScene, Level1, Level2, Level3, GameOverScene]
+  scene: [TitleScene, RunnerScene, GameOverScene]
 };
 
-const game = new Phaser.Game(config);
+new Phaser.Game(config);
 </script>
 
 </body>
