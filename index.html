@@ -8,7 +8,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: #87CEEB; /* Light blue background */
+      background: #87CEEB; /* Light blue background behind the canvas */
     }
     canvas {
       display: block;
@@ -35,15 +35,10 @@ class TitleScene extends Phaser.Scene {
     // Load images for both characters
     this.load.image('blaire', 'assets/daughter.png'); 
     this.load.image('drew', 'assets/son.png'); 
-    // Load background music
-    this.load.audio('bgMusic', 'assets/bgMusic.mp3');
+    // NOTE: Audio loading removed
   }
 
   create() {
-    // Play background music (loop)
-    this.bgMusic = this.sound.add('bgMusic', { loop: true, volume: 0.5 });
-    this.bgMusic.play();
-
     // Title text
     this.add.text(200, 100, "Monkeys World", {
       fontSize: '48px',
@@ -84,7 +79,7 @@ class TitleScene extends Phaser.Scene {
   }
 
   startGame(characterKey) {
-    // Pass the chosen character to Level1
+    // Transition to Level1 with initial data
     this.scene.start('Level1', { character: characterKey, level: 1, score: 0 });
   }
 }
