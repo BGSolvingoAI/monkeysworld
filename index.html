@@ -1,636 +1,620 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.4">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  <meta charset="UTF-8" />
+  <title>Monkeys World</title>
+  <style>
+    /* Basic styling */
+    body {
+      margin: 0;
+      padding: 0;
+      background: #87CEEB; /* Light blue background */
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: #87CEEB; /* Fallback background for the game area */
+    }
   </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8" /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Monkeys World&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* Basic styling */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding: 0;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: #87CEEB; /* Light blue background */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>canvas {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>display: block;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>margin: 0 auto;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: #87CEEB; /* Fallback background for the game area */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- Phaser 3 Library --&gt;</p>
-<p class="p1">&lt;script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"&gt;&lt;/script&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">// SCENE: TitleScene</p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">class TitleScene extends Phaser.Scene {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>constructor() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>super({ key: 'TitleScene' });</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>preload() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Load images for both characters</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.load.image('blaire', 'assets/daughter.png');<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.load.image('drew', 'assets/son.png');<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Load background music</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.load.audio('bgMusic', 'assets/bgMusic.mp3');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>create() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Play background music (loop)</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.bgMusic = this.sound.add('bgMusic', { loop: true, volume: 0.5 });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.bgMusic.play();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Title text</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(200, 100, "Monkeys World", {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '48px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontStyle: 'bold'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Character selection instructions</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(120, 250, "Choose Your Character:", {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '32px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(140, 320, "Press 1 for Blaire", {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '24px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(140, 360, "Press 2 for Drew", {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '24px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(20, 20, "TitleScene loaded!", {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '16px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#fff'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Keyboard input for character selection</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.input.keyboard.on('keydown-ONE', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.startGame('blaire');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.input.keyboard.on('keydown-TWO', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.startGame('drew');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// If someone taps/clicks the screen, default to Blaire</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.input.on('pointerdown', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.startGame('blaire');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>startGame(characterKey) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Pass the chosen character to Level1</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.scene.start('Level1', { character: characterKey, level: 1, score: 0 });</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">// SCENE: Level1</p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">class Level1 extends Phaser.Scene {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>constructor() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>super({ key: 'Level1' });</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>init(data) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.characterKey = data.character || 'blaire';<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.level = data.level || 1;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.score = data.score || 0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>create() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Game dimensions</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.gameWidth = this.sys.game.config.width;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.gameHeight = this.sys.game.config.height;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Create player sprite based on chosen character</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player = this.physics.add.sprite(100, 450, this.characterKey);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player.setCollideWorldBounds(true);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player.setScale(0.5);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Ground</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.ground = this.add.rectangle(</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.gameWidth / 2,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.gameHeight - 20,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.gameWidth,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>40,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>0x654321</p>
-<p class="p1"><span class="Apple-converted-space">    </span>);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.existing(this.ground, true);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.collider(this.player, this.ground);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Obstacles group</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.obstacles = this.physics.add.group();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.collider(this.obstacles, this.ground);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.overlap(this.player, this.obstacles, this.hitObstacle, null, this);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Collectibles group (for 🤟 emoji)</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.collectibles = this.physics.add.group();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.collider(this.collectibles, this.ground);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.overlap(this.player, this.collectibles, this.collectItem, null, this);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Score text</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.scoreText = this.add.text(16, 16, 'Score: ' + this.score, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '32px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Timer</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.levelDuration = 120; // 2 minutes</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.timerText = this.add.text(650, 16, 'Time: ' + this.levelDuration, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '32px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.time.addEvent({</p>
-<p class="p1"><span class="Apple-converted-space">      </span>delay: 1000,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callback: this.updateTimer,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callbackScope: this,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>loop: true</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Input for jump</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.input.on('pointerdown', () =&gt; this.jump());</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.spaceKey.on('down', () =&gt; this.jump());</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Spawn obstacles every 1.5 seconds</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.time.addEvent({</p>
-<p class="p1"><span class="Apple-converted-space">      </span>delay: 1500,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callback: this.addObstacle,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callbackScope: this,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>loop: true</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Spawn collectibles (🤟) every 3 seconds</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.time.addEvent({</p>
-<p class="p1"><span class="Apple-converted-space">      </span>delay: 3000,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callback: this.addCollectible,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callbackScope: this,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>loop: true</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Debug text</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(20, 60, "Level1 loaded!", {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '16px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#fff'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>update() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Auto-run</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player.setVelocityX(200);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>jump() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (this.player.body.touching.down) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.player.setVelocityY(-400);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>addObstacle() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Randomly choose between hockey net (🥅) or lacrosse stick (🥍)</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const obstacleEmoji = Math.random() &lt; 0.5 ? "🥅" : "🥍";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const obstacle = this.add.text(this.gameWidth, 520, obstacleEmoji, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '64px'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.existing(obstacle);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>obstacle.body.setVelocityX(-250);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>obstacle.body.setAllowGravity(false);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.obstacles.add(obstacle);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>addCollectible() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Spawn the "I love you" sign language emoji 🤟</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const collectible = this.add.text(this.gameWidth, 480, '🤟', {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '48px'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.existing(collectible);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>collectible.body.setVelocityX(-200);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>collectible.body.setAllowGravity(false);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.collectibles.add(collectible);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>hitObstacle(player, obstacle) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// If the player is above the obstacle =&gt; successful jump</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (player.y &lt; obstacle.y) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.score += 10;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.scoreText.setText('Score: ' + this.score);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>obstacle.destroy();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>// Game over</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.scene.start('GameOverScene', { score: this.score });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>collectItem(player, collectible) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Collect 🤟 =&gt; +20 points</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.score += 20;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.scoreText.setText('Score: ' + this.score);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>collectible.destroy();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>updateTimer() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.levelDuration--;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.timerText.setText('Time: ' + this.levelDuration);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (this.levelDuration &lt;= 0) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>// Go to Level2</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.scene.start('Level2', {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>character: this.characterKey,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>level: 2,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>score: this.score</p>
-<p class="p1"><span class="Apple-converted-space">      </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">// SCENE: Level2</p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">class Level2 extends Phaser.Scene {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>constructor() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>super({ key: 'Level2' });</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>init(data) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.characterKey = data.character || 'blaire';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.level = data.level || 2;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.score = data.score || 0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>create() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.gameWidth = this.sys.game.config.width;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.gameHeight = this.sys.game.config.height;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Player</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player = this.physics.add.sprite(100, 450, this.characterKey);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player.setCollideWorldBounds(true);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player.setScale(0.5);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Ground</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.ground = this.add.rectangle(</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.gameWidth / 2,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.gameHeight - 20,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.gameWidth,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>40,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>0x654321</p>
-<p class="p1"><span class="Apple-converted-space">    </span>);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.existing(this.ground, true);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.collider(this.player, this.ground);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Obstacles</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.obstacles = this.physics.add.group();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.collider(this.obstacles, this.ground);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.overlap(this.player, this.obstacles, this.hitObstacle, null, this);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Collectibles</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.collectibles = this.physics.add.group();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.collider(this.collectibles, this.ground);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.overlap(this.player, this.collectibles, this.collectItem, null, this);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Score text</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.scoreText = this.add.text(16, 16, 'Score: ' + this.score, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '32px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Timer</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.levelDuration = 120;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.timerText = this.add.text(650, 16, 'Time: ' + this.levelDuration, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '32px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.time.addEvent({</p>
-<p class="p1"><span class="Apple-converted-space">      </span>delay: 1000,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callback: this.updateTimer,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callbackScope: this,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>loop: true</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Input</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.input.on('pointerdown', () =&gt; this.jump());</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.spaceKey.on('down', () =&gt; this.jump());</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// More frequent obstacles</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.time.addEvent({</p>
-<p class="p1"><span class="Apple-converted-space">      </span>delay: 1200,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callback: this.addObstacle,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callbackScope: this,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>loop: true</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Collectibles (🤟)</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.time.addEvent({</p>
-<p class="p1"><span class="Apple-converted-space">      </span>delay: 2500,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callback: this.addCollectible,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callbackScope: this,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>loop: true</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Debug</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(20, 60, "Level2 loaded!", {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '16px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#fff'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>update() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Faster run</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player.setVelocityX(250);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>jump() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (this.player.body.touching.down) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.player.setVelocityY(-420);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>addObstacle() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const obstacleEmoji = Math.random() &lt; 0.5 ? "🥅" : "🥍";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const obstacle = this.add.text(this.gameWidth, 520, obstacleEmoji, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '64px'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.existing(obstacle);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>obstacle.body.setVelocityX(-300);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>obstacle.body.setAllowGravity(false);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.obstacles.add(obstacle);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>addCollectible() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const collectible = this.add.text(this.gameWidth, 480, '🤟', {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '48px'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.existing(collectible);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>collectible.body.setVelocityX(-220);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>collectible.body.setAllowGravity(false);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.collectibles.add(collectible);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>hitObstacle(player, obstacle) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (player.y &lt; obstacle.y) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.score += 10;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.scoreText.setText('Score: ' + this.score);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>obstacle.destroy();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.scene.start('GameOverScene', { score: this.score });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>collectItem(player, collectible) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.score += 20;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.scoreText.setText('Score: ' + this.score);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>collectible.destroy();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>updateTimer() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.levelDuration--;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.timerText.setText('Time: ' + this.levelDuration);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (this.levelDuration &lt;= 0) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.scene.start('Level3', {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>character: this.characterKey,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>level: 3,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>score: this.score</p>
-<p class="p1"><span class="Apple-converted-space">      </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">// SCENE: Level3</p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">class Level3 extends Phaser.Scene {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>constructor() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>super({ key: 'Level3' });</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>init(data) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.characterKey = data.character || 'blaire';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.level = data.level || 3;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.score = data.score || 0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>create() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.gameWidth = this.sys.game.config.width;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.gameHeight = this.sys.game.config.height;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Player</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player = this.physics.add.sprite(100, 450, this.characterKey);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player.setCollideWorldBounds(true);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player.setScale(0.5);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Ground</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.ground = this.add.rectangle(</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.gameWidth / 2,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.gameHeight - 20,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.gameWidth,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>40,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>0x654321</p>
-<p class="p1"><span class="Apple-converted-space">    </span>);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.existing(this.ground, true);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.collider(this.player, this.ground);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Obstacles</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.obstacles = this.physics.add.group();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.collider(this.obstacles, this.ground);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.overlap(this.player, this.obstacles, this.hitObstacle, null, this);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Collectibles</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.collectibles = this.physics.add.group();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.collider(this.collectibles, this.ground);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.overlap(this.player, this.collectibles, this.collectItem, null, this);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Score text</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.scoreText = this.add.text(16, 16, 'Score: ' + this.score, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '32px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Timer</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.levelDuration = 120;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.timerText = this.add.text(650, 16, 'Time: ' + this.levelDuration, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '32px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.time.addEvent({</p>
-<p class="p1"><span class="Apple-converted-space">      </span>delay: 1000,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callback: this.updateTimer,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callbackScope: this,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>loop: true</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Input</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.input.on('pointerdown', () =&gt; this.jump());</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.spaceKey.on('down', () =&gt; this.jump());</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Even more frequent obstacles</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.time.addEvent({</p>
-<p class="p1"><span class="Apple-converted-space">      </span>delay: 1000,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callback: this.addObstacle,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callbackScope: this,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>loop: true</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Collectibles (🤟)</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.time.addEvent({</p>
-<p class="p1"><span class="Apple-converted-space">      </span>delay: 2000,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callback: this.addCollectible,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>callbackScope: this,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>loop: true</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Debug</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(20, 60, "Level3 loaded!", {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '16px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#fff'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>update() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Even faster run</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.player.setVelocityX(300);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>jump() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (this.player.body.touching.down) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.player.setVelocityY(-450);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>addObstacle() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const obstacleEmoji = Math.random() &lt; 0.5 ? "🥅" : "🥍";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const obstacle = this.add.text(this.gameWidth, 520, obstacleEmoji, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '64px'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.existing(obstacle);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>obstacle.body.setVelocityX(-350);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>obstacle.body.setAllowGravity(false);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.obstacles.add(obstacle);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>addCollectible() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const collectible = this.add.text(this.gameWidth, 480, '🤟', {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '48px'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.physics.add.existing(collectible);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>collectible.body.setVelocityX(-250);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>collectible.body.setAllowGravity(false);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.collectibles.add(collectible);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>hitObstacle(player, obstacle) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (player.y &lt; obstacle.y) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.score += 10;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.scoreText.setText('Score: ' + this.score);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>obstacle.destroy();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.scene.start('GameOverScene', { score: this.score });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>collectItem(player, collectible) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.score += 20;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.scoreText.setText('Score: ' + this.score);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>collectible.destroy();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>updateTimer() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.levelDuration--;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.timerText.setText('Time: ' + this.levelDuration);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (this.levelDuration &lt;= 0) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>// Survived all 3 levels =&gt; "victory"</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.scene.start('GameOverScene', { score: this.score, victory: true });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">// SCENE: GameOverScene</p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">class GameOverScene extends Phaser.Scene {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>constructor() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>super({ key: 'GameOverScene' });</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>init(data) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.finalScore = data.score || 0;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.victory = data.victory || false;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>create() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const message = this.victory ? "You completed all levels!" : "Game Over!";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(200, 200, message, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '48px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontStyle: 'bold'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(200, 300, `Final Score: ${this.finalScore}`, {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '32px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.add.text(150, 400, "Tap or Press SPACE to Restart", {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fontSize: '24px',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>fill: '#000'</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.input.keyboard.on('keydown-SPACE', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.restartGame();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.input.on('pointerdown', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.restartGame();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>restartGame() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Return to TitleScene</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.scene.start('TitleScene');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">// GAME CONFIG &amp; LAUNCH</p>
-<p class="p1">// -----------------------------------------------------------------------------</p>
-<p class="p1">const config = {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>type: Phaser.AUTO,</p>
-<p class="p1"><span class="Apple-converted-space">  </span>width: 800,</p>
-<p class="p1"><span class="Apple-converted-space">  </span>height: 600,</p>
-<p class="p1"><span class="Apple-converted-space">  </span>backgroundColor: "#87CEEB",</p>
-<p class="p1"><span class="Apple-converted-space">  </span>physics: {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>default: 'arcade',</p>
-<p class="p1"><span class="Apple-converted-space">    </span>arcade: {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>gravity: { y: 600 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>debug: false</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>scene: [TitleScene, Level1, Level2, Level3, GameOverScene]</p>
-<p class="p1">};</p>
-<p class="p2"><br></p>
-<p class="p1">const game = new Phaser.Game(config);</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+
+<!-- Phaser 3 Library -->
+<script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+
+<script>
+// -----------------------------------------------------------------------------
+// SCENE: TitleScene
+// -----------------------------------------------------------------------------
+class TitleScene extends Phaser.Scene {
+  constructor() {
+    super({ key: 'TitleScene' });
+  }
+
+  preload() {
+    // Load images for both characters
+    this.load.image('blaire', 'assets/daughter.png'); 
+    this.load.image('drew', 'assets/son.png'); 
+    // Load background music
+    this.load.audio('bgMusic', 'assets/bgMusic.mp3');
+  }
+
+  create() {
+    // Play background music (loop)
+    this.bgMusic = this.sound.add('bgMusic', { loop: true, volume: 0.5 });
+    this.bgMusic.play();
+
+    // Title text
+    this.add.text(200, 100, "Monkeys World", {
+      fontSize: '48px',
+      fill: '#000',
+      fontStyle: 'bold'
+    });
+
+    // Character selection instructions
+    this.add.text(120, 250, "Choose Your Character:", {
+      fontSize: '32px',
+      fill: '#000'
+    });
+    this.add.text(140, 320, "Press 1 for Blaire", {
+      fontSize: '24px',
+      fill: '#000'
+    });
+    this.add.text(140, 360, "Press 2 for Drew", {
+      fontSize: '24px',
+      fill: '#000'
+    });
+    this.add.text(20, 20, "TitleScene loaded!", {
+      fontSize: '16px',
+      fill: '#fff'
+    });
+
+    // Keyboard input for character selection
+    this.input.keyboard.on('keydown-ONE', () => {
+      this.startGame('blaire');
+    });
+    this.input.keyboard.on('keydown-TWO', () => {
+      this.startGame('drew');
+    });
+
+    // If someone taps/clicks the screen, default to Blaire
+    this.input.on('pointerdown', () => {
+      this.startGame('blaire');
+    });
+  }
+
+  startGame(characterKey) {
+    // Pass the chosen character to Level1
+    this.scene.start('Level1', { character: characterKey, level: 1, score: 0 });
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SCENE: Level1
+// -----------------------------------------------------------------------------
+class Level1 extends Phaser.Scene {
+  constructor() {
+    super({ key: 'Level1' });
+  }
+
+  init(data) {
+    this.characterKey = data.character || 'blaire'; 
+    this.level = data.level || 1;
+    this.score = data.score || 0;
+  }
+
+  create() {
+    // Game dimensions
+    this.gameWidth = this.sys.game.config.width;
+    this.gameHeight = this.sys.game.config.height;
+
+    // Create player sprite based on chosen character
+    this.player = this.physics.add.sprite(100, 450, this.characterKey);
+    this.player.setCollideWorldBounds(true);
+    this.player.setScale(0.5);
+
+    // Ground
+    this.ground = this.add.rectangle(
+      this.gameWidth / 2,
+      this.gameHeight - 20,
+      this.gameWidth,
+      40,
+      0x654321
+    );
+    this.physics.add.existing(this.ground, true);
+    this.physics.add.collider(this.player, this.ground);
+
+    // Obstacles group
+    this.obstacles = this.physics.add.group();
+    this.physics.add.collider(this.obstacles, this.ground);
+    this.physics.add.overlap(this.player, this.obstacles, this.hitObstacle, null, this);
+
+    // Collectibles group (for 🤟 emoji)
+    this.collectibles = this.physics.add.group();
+    this.physics.add.collider(this.collectibles, this.ground);
+    this.physics.add.overlap(this.player, this.collectibles, this.collectItem, null, this);
+
+    // Score text
+    this.scoreText = this.add.text(16, 16, 'Score: ' + this.score, {
+      fontSize: '32px',
+      fill: '#000'
+    });
+
+    // Timer
+    this.levelDuration = 120; // 2 minutes
+    this.timerText = this.add.text(650, 16, 'Time: ' + this.levelDuration, {
+      fontSize: '32px',
+      fill: '#000'
+    });
+    this.time.addEvent({
+      delay: 1000,
+      callback: this.updateTimer,
+      callbackScope: this,
+      loop: true
+    });
+
+    // Input for jump
+    this.input.on('pointerdown', () => this.jump());
+    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.spaceKey.on('down', () => this.jump());
+
+    // Spawn obstacles every 1.5 seconds
+    this.time.addEvent({
+      delay: 1500,
+      callback: this.addObstacle,
+      callbackScope: this,
+      loop: true
+    });
+
+    // Spawn collectibles (🤟) every 3 seconds
+    this.time.addEvent({
+      delay: 3000,
+      callback: this.addCollectible,
+      callbackScope: this,
+      loop: true
+    });
+
+    // Debug text
+    this.add.text(20, 60, "Level1 loaded!", {
+      fontSize: '16px',
+      fill: '#fff'
+    });
+  }
+
+  update() {
+    // Auto-run
+    this.player.setVelocityX(200);
+  }
+
+  jump() {
+    if (this.player.body.touching.down) {
+      this.player.setVelocityY(-400);
+    }
+  }
+
+  addObstacle() {
+    // Randomly choose between hockey net (🥅) or lacrosse stick (🥍)
+    const obstacleEmoji = Math.random() < 0.5 ? "🥅" : "🥍";
+    const obstacle = this.add.text(this.gameWidth, 520, obstacleEmoji, {
+      fontSize: '64px'
+    });
+    this.physics.add.existing(obstacle);
+    obstacle.body.setVelocityX(-250);
+    obstacle.body.setAllowGravity(false);
+    this.obstacles.add(obstacle);
+  }
+
+  addCollectible() {
+    // Spawn the "I love you" sign language emoji 🤟
+    const collectible = this.add.text(this.gameWidth, 480, '🤟', {
+      fontSize: '48px'
+    });
+    this.physics.add.existing(collectible);
+    collectible.body.setVelocityX(-200);
+    collectible.body.setAllowGravity(false);
+    this.collectibles.add(collectible);
+  }
+
+  hitObstacle(player, obstacle) {
+    // If the player is above the obstacle => successful jump
+    if (player.y < obstacle.y) {
+      this.score += 10;
+      this.scoreText.setText('Score: ' + this.score);
+      obstacle.destroy();
+    } else {
+      // Game over
+      this.scene.start('GameOverScene', { score: this.score });
+    }
+  }
+
+  collectItem(player, collectible) {
+    // Collect 🤟 => +20 points
+    this.score += 20;
+    this.scoreText.setText('Score: ' + this.score);
+    collectible.destroy();
+  }
+
+  updateTimer() {
+    this.levelDuration--;
+    this.timerText.setText('Time: ' + this.levelDuration);
+    if (this.levelDuration <= 0) {
+      // Go to Level2
+      this.scene.start('Level2', {
+        character: this.characterKey,
+        level: 2,
+        score: this.score
+      });
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SCENE: Level2
+// -----------------------------------------------------------------------------
+class Level2 extends Phaser.Scene {
+  constructor() {
+    super({ key: 'Level2' });
+  }
+
+  init(data) {
+    this.characterKey = data.character || 'blaire';
+    this.level = data.level || 2;
+    this.score = data.score || 0;
+  }
+
+  create() {
+    this.gameWidth = this.sys.game.config.width;
+    this.gameHeight = this.sys.game.config.height;
+
+    // Player
+    this.player = this.physics.add.sprite(100, 450, this.characterKey);
+    this.player.setCollideWorldBounds(true);
+    this.player.setScale(0.5);
+
+    // Ground
+    this.ground = this.add.rectangle(
+      this.gameWidth / 2,
+      this.gameHeight - 20,
+      this.gameWidth,
+      40,
+      0x654321
+    );
+    this.physics.add.existing(this.ground, true);
+    this.physics.add.collider(this.player, this.ground);
+
+    // Obstacles
+    this.obstacles = this.physics.add.group();
+    this.physics.add.collider(this.obstacles, this.ground);
+    this.physics.add.overlap(this.player, this.obstacles, this.hitObstacle, null, this);
+
+    // Collectibles
+    this.collectibles = this.physics.add.group();
+    this.physics.add.collider(this.collectibles, this.ground);
+    this.physics.add.overlap(this.player, this.collectibles, this.collectItem, null, this);
+
+    // Score text
+    this.scoreText = this.add.text(16, 16, 'Score: ' + this.score, {
+      fontSize: '32px',
+      fill: '#000'
+    });
+
+    // Timer
+    this.levelDuration = 120;
+    this.timerText = this.add.text(650, 16, 'Time: ' + this.levelDuration, {
+      fontSize: '32px',
+      fill: '#000'
+    });
+    this.time.addEvent({
+      delay: 1000,
+      callback: this.updateTimer,
+      callbackScope: this,
+      loop: true
+    });
+
+    // Input
+    this.input.on('pointerdown', () => this.jump());
+    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.spaceKey.on('down', () => this.jump());
+
+    // More frequent obstacles
+    this.time.addEvent({
+      delay: 1200,
+      callback: this.addObstacle,
+      callbackScope: this,
+      loop: true
+    });
+
+    // Collectibles (🤟)
+    this.time.addEvent({
+      delay: 2500,
+      callback: this.addCollectible,
+      callbackScope: this,
+      loop: true
+    });
+
+    // Debug
+    this.add.text(20, 60, "Level2 loaded!", {
+      fontSize: '16px',
+      fill: '#fff'
+    });
+  }
+
+  update() {
+    // Faster run
+    this.player.setVelocityX(250);
+  }
+
+  jump() {
+    if (this.player.body.touching.down) {
+      this.player.setVelocityY(-420);
+    }
+  }
+
+  addObstacle() {
+    const obstacleEmoji = Math.random() < 0.5 ? "🥅" : "🥍";
+    const obstacle = this.add.text(this.gameWidth, 520, obstacleEmoji, {
+      fontSize: '64px'
+    });
+    this.physics.add.existing(obstacle);
+    obstacle.body.setVelocityX(-300);
+    obstacle.body.setAllowGravity(false);
+    this.obstacles.add(obstacle);
+  }
+
+  addCollectible() {
+    const collectible = this.add.text(this.gameWidth, 480, '🤟', {
+      fontSize: '48px'
+    });
+    this.physics.add.existing(collectible);
+    collectible.body.setVelocityX(-220);
+    collectible.body.setAllowGravity(false);
+    this.collectibles.add(collectible);
+  }
+
+  hitObstacle(player, obstacle) {
+    if (player.y < obstacle.y) {
+      this.score += 10;
+      this.scoreText.setText('Score: ' + this.score);
+      obstacle.destroy();
+    } else {
+      this.scene.start('GameOverScene', { score: this.score });
+    }
+  }
+
+  collectItem(player, collectible) {
+    this.score += 20;
+    this.scoreText.setText('Score: ' + this.score);
+    collectible.destroy();
+  }
+
+  updateTimer() {
+    this.levelDuration--;
+    this.timerText.setText('Time: ' + this.levelDuration);
+    if (this.levelDuration <= 0) {
+      this.scene.start('Level3', {
+        character: this.characterKey,
+        level: 3,
+        score: this.score
+      });
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SCENE: Level3
+// -----------------------------------------------------------------------------
+class Level3 extends Phaser.Scene {
+  constructor() {
+    super({ key: 'Level3' });
+  }
+
+  init(data) {
+    this.characterKey = data.character || 'blaire';
+    this.level = data.level || 3;
+    this.score = data.score || 0;
+  }
+
+  create() {
+    this.gameWidth = this.sys.game.config.width;
+    this.gameHeight = this.sys.game.config.height;
+
+    // Player
+    this.player = this.physics.add.sprite(100, 450, this.characterKey);
+    this.player.setCollideWorldBounds(true);
+    this.player.setScale(0.5);
+
+    // Ground
+    this.ground = this.add.rectangle(
+      this.gameWidth / 2,
+      this.gameHeight - 20,
+      this.gameWidth,
+      40,
+      0x654321
+    );
+    this.physics.add.existing(this.ground, true);
+    this.physics.add.collider(this.player, this.ground);
+
+    // Obstacles
+    this.obstacles = this.physics.add.group();
+    this.physics.add.collider(this.obstacles, this.ground);
+    this.physics.add.overlap(this.player, this.obstacles, this.hitObstacle, null, this);
+
+    // Collectibles
+    this.collectibles = this.physics.add.group();
+    this.physics.add.collider(this.collectibles, this.ground);
+    this.physics.add.overlap(this.player, this.collectibles, this.collectItem, null, this);
+
+    // Score text
+    this.scoreText = this.add.text(16, 16, 'Score: ' + this.score, {
+      fontSize: '32px',
+      fill: '#000'
+    });
+
+    // Timer
+    this.levelDuration = 120;
+    this.timerText = this.add.text(650, 16, 'Time: ' + this.levelDuration, {
+      fontSize: '32px',
+      fill: '#000'
+    });
+    this.time.addEvent({
+      delay: 1000,
+      callback: this.updateTimer,
+      callbackScope: this,
+      loop: true
+    });
+
+    // Input
+    this.input.on('pointerdown', () => this.jump());
+    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.spaceKey.on('down', () => this.jump());
+
+    // Even more frequent obstacles
+    this.time.addEvent({
+      delay: 1000,
+      callback: this.addObstacle,
+      callbackScope: this,
+      loop: true
+    });
+
+    // Collectibles (🤟)
+    this.time.addEvent({
+      delay: 2000,
+      callback: this.addCollectible,
+      callbackScope: this,
+      loop: true
+    });
+
+    // Debug
+    this.add.text(20, 60, "Level3 loaded!", {
+      fontSize: '16px',
+      fill: '#fff'
+    });
+  }
+
+  update() {
+    // Even faster run
+    this.player.setVelocityX(300);
+  }
+
+  jump() {
+    if (this.player.body.touching.down) {
+      this.player.setVelocityY(-450);
+    }
+  }
+
+  addObstacle() {
+    const obstacleEmoji = Math.random() < 0.5 ? "🥅" : "🥍";
+    const obstacle = this.add.text(this.gameWidth, 520, obstacleEmoji, {
+      fontSize: '64px'
+    });
+    this.physics.add.existing(obstacle);
+    obstacle.body.setVelocityX(-350);
+    obstacle.body.setAllowGravity(false);
+    this.obstacles.add(obstacle);
+  }
+
+  addCollectible() {
+    const collectible = this.add.text(this.gameWidth, 480, '🤟', {
+      fontSize: '48px'
+    });
+    this.physics.add.existing(collectible);
+    collectible.body.setVelocityX(-250);
+    collectible.body.setAllowGravity(false);
+    this.collectibles.add(collectible);
+  }
+
+  hitObstacle(player, obstacle) {
+    if (player.y < obstacle.y) {
+      this.score += 10;
+      this.scoreText.setText('Score: ' + this.score);
+      obstacle.destroy();
+    } else {
+      this.scene.start('GameOverScene', { score: this.score });
+    }
+  }
+
+  collectItem(player, collectible) {
+    this.score += 20;
+    this.scoreText.setText('Score: ' + this.score);
+    collectible.destroy();
+  }
+
+  updateTimer() {
+    this.levelDuration--;
+    this.timerText.setText('Time: ' + this.levelDuration);
+    if (this.levelDuration <= 0) {
+      // Survived all 3 levels => "victory"
+      this.scene.start('GameOverScene', { score: this.score, victory: true });
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SCENE: GameOverScene
+// -----------------------------------------------------------------------------
+class GameOverScene extends Phaser.Scene {
+  constructor() {
+    super({ key: 'GameOverScene' });
+  }
+
+  init(data) {
+    this.finalScore = data.score || 0;
+    this.victory = data.victory || false;
+  }
+
+  create() {
+    const message = this.victory ? "You completed all levels!" : "Game Over!";
+
+    this.add.text(200, 200, message, {
+      fontSize: '48px',
+      fill: '#000',
+      fontStyle: 'bold'
+    });
+
+    this.add.text(200, 300, `Final Score: ${this.finalScore}`, {
+      fontSize: '32px',
+      fill: '#000'
+    });
+
+    this.add.text(150, 400, "Tap or Press SPACE to Restart", {
+      fontSize: '24px',
+      fill: '#000'
+    });
+
+    this.input.keyboard.on('keydown-SPACE', () => {
+      this.restartGame();
+    });
+    this.input.on('pointerdown', () => {
+      this.restartGame();
+    });
+  }
+
+  restartGame() {
+    // Return to TitleScene
+    this.scene.start('TitleScene');
+  }
+}
+
+// -----------------------------------------------------------------------------
+// GAME CONFIG & LAUNCH
+// -----------------------------------------------------------------------------
+const config = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  backgroundColor: "#87CEEB",
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 600 },
+      debug: false
+    }
+  },
+  scene: [TitleScene, Level1, Level2, Level3, GameOverScene]
+};
+
+const game = new Phaser.Game(config);
+</script>
+
 </body>
 </html>
