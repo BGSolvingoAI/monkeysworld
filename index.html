@@ -7,7 +7,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: #87CEEB; /* Light blue background behind the canvas */
+      background: #87CEEB; /* Light blue background */
     }
     canvas {
       display: block;
@@ -58,7 +58,6 @@ class TitleScene extends Phaser.Scene {
       fill: '#000'
     });
 
-    // Debug text so we know TitleScene loaded
     this.add.text(20, 20, "TitleScene loaded!", {
       fontSize: '16px',
       fill: '#fff'
@@ -72,7 +71,7 @@ class TitleScene extends Phaser.Scene {
       this.startGame('drew');
     });
 
-    // If someone taps/clicks the screen, default to Blaire
+    // If someone taps/clicks, default to Blaire
     this.input.on('pointerdown', () => {
       this.startGame('blaire');
     });
@@ -92,7 +91,6 @@ class RunnerScene extends Phaser.Scene {
   }
 
   init(data) {
-    // Which character did we pick?
     this.characterKey = data.character || 'blaire';
   }
 
@@ -101,33 +99,34 @@ class RunnerScene extends Phaser.Scene {
     this.gameWidth = this.sys.game.config.width;   // 800
     this.gameHeight = this.sys.game.config.height; // 600
 
-    // Create the player sprite at x=100, y=450
+    // Create the player sprite
     this.player = this.physics.add.sprite(100, 450, this.characterKey);
     this.player.setCollideWorldBounds(true);
     this.player.setScale(0.5);
 
-    // Create ground as an invisible rectangle
-    // so the player doesn't fall through
+    // Ground (invisible rectangle)
     this.ground = this.add.rectangle(
-      this.gameWidth / 2,  // x = 400
-      this.gameHeight - 20, // y = 580
-      this.gameWidth,       // 800
+      this.gameWidth / 2,
+      this.gameHeight - 20,
+      this.gameWidth,
       40,
       0x654321
     );
     this.physics.add.existing(this.ground, true);
     this.physics.add.collider(this.player, this.ground);
 
-    // We'll keep the player stationary (no horizontal velocity)
-    // and spawn obstacles from the right side moving left.
-    // This creates the "infinite runner" feel.
-
     // Group for obstacles
     this.obstacles = this.physics.add.group();
-    // Collide obstacles with the ground so they rest on it (if we had gravity)
     this.physics.add.collider(this.obstacles, this.ground);
-    // Overlap check to see if the player collides with an obstacle
-    this.physics.add.overlap(this.player, this.obstacles, this.hitObstacle, null, this);
+
+    // Overlap check: We'll handle logic in hitObstacle()
+    this.physics.add.overlap(
+      this.player,
+      this.obstacles,
+      this.hitObstacle,
+      null,
+      this
+    );
 
     // Score
     this.score = 0;
@@ -136,20 +135,19 @@ class RunnerScene extends Phaser.Scene {
       fill: '#000'
     });
 
-    // Input for jump
+    // Jump input
     this.input.on('pointerdown', () => this.jump());
     this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.spaceKey.on('down', () => this.jump());
 
-    // Spawn obstacles on a timer
+    // Spawn obstacles every 1.5 seconds
     this.time.addEvent({
-      delay: 1500, // spawn every 1.5 seconds
+      delay: 1500,
       callback: this.addObstacle,
       callbackScope: this,
       loop: true
     });
 
-    // Debug text
     this.add.text(20, 60, "RunnerScene loaded!", {
       fontSize: '16px',
       fill: '#fff'
@@ -157,43 +155,41 @@ class RunnerScene extends Phaser.Scene {
   }
 
   update() {
-    // Keep the player in place (no horizontal velocity)
+    // Player stays in place horizontally
     this.player.setVelocityX(0);
   }
 
   jump() {
-    // Jump only if touching the ground
     if (this.player.body.touching.down) {
       this.player.setVelocityY(-400);
     }
   }
 
   addObstacle() {
-    // All obstacles must be jumped over
-    // We'll pick randomly from an array of emojis
-    const obstacleOptions = ["🥅", "🥍", "🤟"]; // hockey net, lacrosse stick, i love you
+    // We'll pick randomly from these emojis
+    const obstacleOptions = ["🥅", "🥍", "🤟"];
     const emoji = obstacleOptions[Math.floor(Math.random() * obstacleOptions.length)];
 
-    // Create a text object at x=800 (off-screen to the right)
-    // y=520 so it appears near the ground
+    // Create a text object at x=800, y=520 near the ground
     const obstacle = this.add.text(800, 520, emoji, {
       fontSize: '64px'
     });
     this.physics.add.existing(obstacle);
 
-    // Move left so the player has to jump over it
+    // Move left so the player must jump over it
     obstacle.body.setVelocityX(-200);
     obstacle.body.setAllowGravity(false);
 
-    // Add to obstacles group
     this.obstacles.add(obstacle);
   }
 
   hitObstacle(player, obstacle) {
-    // Check if the player is above the obstacle => successful jump
-    // We do this by comparing positions at the moment of overlap
-    if (player.y < obstacle.y) {
-      // If above, we treat it as a successful jump
+    // We'll check the center Y of the player vs. the obstacle
+    const playerCenterY = player.y + player.displayHeight * 0.5;
+    const obstacleCenterY = obstacle.y + 32; // text is ~64px tall, so center ~+32
+
+    if (playerCenterY < obstacleCenterY) {
+      // Player is above obstacle => successful jump
       this.score += 10;
       this.scoreText.setText('Score: ' + this.score);
       obstacle.destroy();
@@ -217,7 +213,6 @@ class GameOverScene extends Phaser.Scene {
   }
 
   create() {
-    // Show Game Over & Score
     this.add.text(200, 200, "Game Over!", {
       fontSize: '48px',
       fill: '#000',
