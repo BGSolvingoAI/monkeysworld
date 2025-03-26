@@ -1,528 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Monkeys World - Infinite Runner Refactored</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            background-color: #333; /* Darker background for contrast */
-        }
-        canvas {
-            display: block;
-            /* margin: 0 auto; Let flexbox handle centering */
-            background: #87CEEB; /* Keep canvas background light blue */
-            border: 1px solid #000; /* Optional: Add border for visibility */
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Monkeys World - Infinite Runner</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #87CEEB; /* Light blue background */
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: #87CEEB;
+    }
+  </style>
 </head>
 <body>
 
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+<!-- Phaser 3 Library -->
+<script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+
 <script>
 // -----------------------------------------------------------------------------
-// Constants
-// -----------------------------------------------------------------------------
-const GAME_WIDTH = 800;
-const GAME_HEIGHT = 600;
-const PLAYER_START_X = 150;
-const PLAYER_START_Y = GAME_HEIGHT - 150; // Adjust based on ground height & player size
-const GROUND_HEIGHT = 80; // Height of the visual ground
-const PLAYER_GRAVITY = 800;
-const PLAYER_JUMP_VELOCITY = -450;
-const OBSTACLE_START_SPEED = -250;
-const OBSTACLE_SPAWN_DELAY_MIN = 1200; // milliseconds
-const OBSTACLE_SPAWN_DELAY_MAX = 2500; // milliseconds
-
-// -----------------------------------------------------------------------------
-// SCENE: PreloadScene
-// Responsible for loading all game assets
-// -----------------------------------------------------------------------------
-class PreloadScene extends Phaser.Scene {
-    constructor() {
-        super({ key: 'PreloadScene' });
-    }
-
-    preload() {
-        console.log("PreloadScene: Preloading assets...");
-
-        // Display a loading message (optional)
-        const loadingText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'Loading...', {
-            fontSize: '32px',
-            fill: '#fff'
-        }).setOrigin(0.5);
-
-        // --- Load Character Assets ---
-        // Replace 'assets/daughter.png' and 'assets/son.png' with your actual file paths
-        // Make sure you have an 'assets' folder next to your HTML file, or adjust paths.
-        this.load.image('blaire', 'assets/daughter.png'); // Example path
-        this.load.image('drew', 'assets/son.png');       // Example path
-
-        // --- Load Obstacle Asset ---
-        // Replace 'assets/obstacle.png' with your obstacle image
-        // If you don't have one, uncomment the line below to create a placeholder
-        this.load.image('obstacle', 'assets/obstacle.png'); // Example path
-        // this.createPlaceholderTexture('obstacle', 50, 50, '0xff0000'); // Creates a red square if no image
-
-        // --- Load Ground Asset ---
-        // Replace 'assets/ground.png' with your ground tile image
-        // If you don't have one, uncomment the line below to create a placeholder
-        this.load.image('ground', 'assets/ground.png'); // Example path
-        // this.createPlaceholderTexture('ground', 100, GROUND_HEIGHT, '0x654321'); // Creates a brown rectangle if no image
-
-        // --- Load Background Asset (Optional) ---
-        // Replace 'assets/background.png' with your background image
-        // this.load.image('background', 'assets/background.png');
-
-        // --- Handle Loading Progress (Optional) ---
-        this.load.on('progress', (value) => {
-            // console.log('Loading progress:', value);
-            // You could update a loading bar here
-        });
-
-        // --- Handle Loading Completion ---
-        this.load.on('complete', () => {
-            console.log("PreloadScene: Asset loading complete.");
-            loadingText.destroy(); // Remove loading text
-            this.scene.start('TitleScene'); // Start the title screen
-        });
-
-        // --- Handle File Load Errors ---
-        this.load.on('loaderror', (file) => {
-            console.error('Error loading asset:', file.key, file.url);
-            loadingText.setText(`Error loading: ${file.key}`);
-            // Consider stopping the game or showing a more permanent error
-        });
-    }
-
-    // Helper function to create simple colored rectangle textures if you lack images
-    createPlaceholderTexture(key, width, height, colorHex) {
-        const graphics = this.make.graphics({ x: 0, y: 0, add: false });
-        graphics.fillStyle(colorHex, 1);
-        graphics.fillRect(0, 0, width, height);
-        graphics.generateTexture(key, width, height);
-        graphics.destroy();
-        console.log(`Created placeholder texture: ${key}`);
-    }
-}
-
-
-// -----------------------------------------------------------------------------
 // SCENE: TitleScene
-// Displays title and character selection
 // -----------------------------------------------------------------------------
 class TitleScene extends Phaser.Scene {
-    constructor() {
-        super({ key: 'TitleScene' });
-    }
+  constructor() {
+    super({ key: 'TitleScene' });
+  }
 
-    // Preload moved to PreloadScene
+  preload() {
+    // Load images for both characters
+    this.load.image('blaire', 'assets/daughter.png');
+    this.load.image('drew', 'assets/son.png');
+  }
 
-    create() {
-        console.log("TitleScene: Creating scene.");
-        // Title text
-        this.add.text(GAME_WIDTH / 2, 150, "Monkeys World", {
-            fontSize: '48px',
-            fill: '#000',
-            fontStyle: 'bold'
-        }).setOrigin(0.5);
+  create() {
+    // Title text
+    this.add.text(160, 100, "Monkeys World (Infinite Runner)", {
+      fontSize: '32px',
+      fill: '#000',
+      fontStyle: 'bold'
+    });
 
-        this.add.text(GAME_WIDTH / 2, 210, "(Infinite Runner)", {
-            fontSize: '28px',
-            fill: '#333',
-        }).setOrigin(0.5);
+    // Character selection instructions
+    this.add.text(140, 250, "Choose Your Character:", {
+      fontSize: '28px',
+      fill: '#000'
+    });
+    this.add.text(160, 320, "Press 1 for Blaire", {
+      fontSize: '24px',
+      fill: '#000'
+    });
+    this.add.text(160, 360, "Press 2 for Drew", {
+      fontSize: '24px',
+      fill: '#000'
+    });
 
+    this.add.text(20, 20, "TitleScene loaded!", {
+      fontSize: '16px',
+      fill: '#fff'
+    });
 
-        // Character selection instructions
-        this.add.text(GAME_WIDTH / 2, 300, "Choose Your Character:", {
-            fontSize: '28px',
-            fill: '#000'
-        }).setOrigin(0.5);
+    // Keyboard input for character selection
+    this.input.keyboard.on('keydown-ONE', () => {
+      this.startGame('blaire');
+    });
+    this.input.keyboard.on('keydown-TWO', () => {
+      this.startGame('drew');
+    });
 
-        // Display character previews (optional but nice)
-        this.add.image(GAME_WIDTH / 2 - 100, 380, 'blaire').setScale(0.4);
-        this.add.image(GAME_WIDTH / 2 + 100, 380, 'drew').setScale(0.4);
+    // If someone taps/clicks, default to Blaire
+    this.input.on('pointerdown', () => {
+      this.startGame('blaire');
+    });
+  }
 
-        this.add.text(GAME_WIDTH / 2 - 100, 450, "Press 1 for Blaire", {
-            fontSize: '20px',
-            fill: '#000'
-        }).setOrigin(0.5);
-
-        this.add.text(GAME_WIDTH / 2 + 100, 450, "Press 2 for Drew", {
-            fontSize: '20px',
-            fill: '#000'
-        }).setOrigin(0.5);
-
-         this.add.text(GAME_WIDTH / 2, 520, "Tap/Click or Press Space to Start (Defaults to Blaire)", {
-            fontSize: '18px',
-            fill: '#555'
-        }).setOrigin(0.5);
-
-
-        // Keyboard input for character selection
-        this.input.keyboard.on('keydown-ONE', () => {
-            this.startGame('blaire');
-        }, this); // Add 'this' context
-
-        this.input.keyboard.on('keydown-TWO', () => {
-            this.startGame('drew');
-        }, this); // Add 'this' context
-
-         // Start with default character on Space or Tap
-        this.input.keyboard.on('keydown-SPACE', () => {
-            this.startGame('blaire'); // Default character
-        }, this);
-
-        this.input.on('pointerdown', () => {
-            this.startGame('blaire'); // Default character
-        }, this);
-
-         // Ensure keys/input are re-enabled if coming back from GameOver
-        this.input.keyboard.resetKeys();
-        this.input.enabled = true;
-    }
-
-    startGame(characterKey) {
-         // Prevent starting multiple times if clicked/pressed rapidly
-        if (!this.scene.isActive('RunnerScene')) {
-             console.log(`TitleScene: Starting game with character: ${characterKey}`);
-             // Disable input listeners for this scene before starting the next
-             this.input.keyboard.removeAllListeners();
-             this.input.removeAllListeners();
-             this.scene.start('RunnerScene', { character: characterKey });
-        }
-    }
+  startGame(characterKey) {
+    this.scene.start('RunnerScene', { character: characterKey });
+  }
 }
 
 // -----------------------------------------------------------------------------
 // SCENE: RunnerScene (Infinite Runner)
-// The main game scene
 // -----------------------------------------------------------------------------
 class RunnerScene extends Phaser.Scene {
-    constructor() {
-        super({ key: 'RunnerScene' });
+  constructor() {
+    super({ key: 'RunnerScene' });
+  }
 
-        // Game state variables
-        this.player = null;
-        this.ground = null;
-        this.obstacles = null;
-        this.score = 0;
-        this.scoreText = null;
-        this.characterKey = 'blaire'; // Default
-        this.obstacleSpeed = OBSTACLE_START_SPEED;
-        this.obstacleSpawnTimer = null;
-        this.isGameOver = false;
-        this.cursors = null; // For keyboard input
-        this.jumpKey = null;
+  init(data) {
+    this.characterKey = data.character || 'blaire';
+  }
+
+  create() {
+    // Basic setup
+    this.gameWidth = this.sys.game.config.width;   // 800
+    this.gameHeight = this.sys.game.config.height; // 600
+
+    // Create the player sprite
+    this.player = this.physics.add.sprite(100, 450, this.characterKey);
+    this.player.setCollideWorldBounds(true);
+    this.player.setScale(0.5);
+
+    // Ground (invisible rectangle)
+    this.ground = this.add.rectangle(
+      this.gameWidth / 2,
+      this.gameHeight - 20,
+      this.gameWidth,
+      40,
+      0x654321
+    );
+    this.physics.add.existing(this.ground, true);
+    this.physics.add.collider(this.player, this.ground);
+
+    // Group for obstacles
+    this.obstacles = this.physics.add.group();
+    this.physics.add.collider(this.obstacles, this.ground);
+
+    // Overlap check: We'll handle logic in hitObstacle()
+    this.physics.add.overlap(
+      this.player,
+      this.obstacles,
+      this.hitObstacle,
+      null,
+      this
+    );
+
+    // Score
+    this.score = 0;
+    this.scoreText = this.add.text(16, 16, 'Score: 0', {
+      fontSize: '32px',
+      fill: '#000'
+    });
+
+    // Jump input
+    this.input.on('pointerdown', () => this.jump());
+    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.spaceKey.on('down', () => this.jump());
+
+    // Spawn obstacles every 1.5 seconds
+    this.time.addEvent({
+      delay: 1500,
+      callback: this.addObstacle,
+      callbackScope: this,
+      loop: true
+    });
+
+    this.add.text(20, 60, "RunnerScene loaded!", {
+      fontSize: '16px',
+      fill: '#fff'
+    });
+  }
+
+  update() {
+    // Player stays in place horizontally
+    this.player.setVelocityX(0);
+  }
+
+  jump() {
+    if (this.player.body.touching.down) {
+      this.player.setVelocityY(-400);
     }
+  }
 
-    init(data) {
-        console.log("RunnerScene: Initializing with data:", data);
-        this.characterKey = data.character || 'blaire'; // Use selected character or default
+  addObstacle() {
+    // We'll pick randomly from these emojis
+    const obstacleOptions = ["🥅", "🥍", "🤟"];
+    const emoji = obstacleOptions[Math.floor(Math.random() * obstacleOptions.length)];
 
-        // Reset state for restarts
-        this.score = 0;
-        this.obstacleSpeed = OBSTACLE_START_SPEED;
-        this.isGameOver = false;
+    // Create a text object at x=800, y=520 near the ground
+    const obstacle = this.add.text(800, 520, emoji, {
+      fontSize: '64px'
+    });
+    this.physics.add.existing(obstacle);
+
+    // Move left so the player must jump over it
+    obstacle.body.setVelocityX(-200);
+    obstacle.body.setAllowGravity(false);
+
+    this.obstacles.add(obstacle);
+  }
+
+  hitObstacle(player, obstacle) {
+    // We'll check the center Y of the player vs. the obstacle
+    const playerCenterY = player.y + player.displayHeight * 0.5;
+    const obstacleCenterY = obstacle.y + 32; // text is ~64px tall, so center ~+32
+
+    if (playerCenterY < obstacleCenterY) {
+      // Player is above obstacle => successful jump
+      this.score += 10;
+      this.scoreText.setText('Score: ' + this.score);
+      obstacle.destroy();
+    } else {
+      // Otherwise, game over
+      this.scene.start('GameOverScene', { score: this.score });
     }
-
-    // Preload moved to PreloadScene
-
-    create() {
-        console.log("RunnerScene: Creating scene.");
-
-        // --- Background (Optional but recommended) ---
-        // If you have a background image loaded as 'background'
-        // this.add.image(0, 0, 'background').setOrigin(0, 0);
-        // For a scrolling background, you might use a TileSprite:
-        // this.background = this.add.tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, 'background').setOrigin(0,0);
-
-        // --- Ground ---
-        // Use a TileSprite for infinitely scrolling ground
-        this.ground = this.add.tileSprite(0, GAME_HEIGHT, GAME_WIDTH, GROUND_HEIGHT, 'ground').setOrigin(0, 1);
-        this.physics.add.existing(this.ground, true); // true = static body
-        this.ground.body.setImmovable(true);
-        this.ground.body.setAllowGravity(false);
-
-        // --- Player ---
-        const playerY = GAME_HEIGHT - GROUND_HEIGHT - (this.textures.get(this.characterKey).getSourceImage().height * 0.5) / 2; // Position slightly above ground based on image height and scale
-        this.player = this.physics.add.sprite(PLAYER_START_X, playerY, this.characterKey);
-        this.player.setScale(0.5); // Adjust scale as needed
-        this.player.setCollideWorldBounds(true); // Prevent falling off sides (though ground collider is primary)
-        this.player.setGravityY(PLAYER_GRAVITY);
-        this.player.setDepth(10); // Ensure player is above ground/obstacles
-
-        // Adjust physics body size/offset if needed (especially if sprite has empty space)
-        // Example: Half width, full height, centered horizontally
-        // const bodyWidth = this.player.width * 0.5;
-        // const bodyHeight = this.player.height;
-        // this.player.body.setSize(bodyWidth, bodyHeight);
-        // this.player.body.setOffset(this.player.width * 0.25, 0);
-
-
-        // --- Obstacles ---
-        this.obstacles = this.physics.add.group({
-            allowGravity: false, // Obstacles won't fall
-            immovable: true      // Obstacles won't be pushed by player
-        });
-
-        // --- Physics Collisions ---
-        this.physics.add.collider(this.player, this.ground);
-        this.physics.add.collider(this.obstacles, this.ground); // Obstacles rest on ground if needed (usually not for runners)
-
-        // Overlap check: Player vs Obstacles -> Game Over
-        this.physics.add.overlap(
-            this.player,
-            this.obstacles,
-            this.handleCollision, // Call gameOver method on overlap
-            null, // No specific process callback needed
-            this // Context
-        );
-
-        // --- Score Display ---
-        this.scoreText = this.add.text(20, 20, 'Score: 0', {
-            fontSize: '32px',
-            fill: '#000',
-            fontStyle: 'bold'
-        }).setDepth(100); // Ensure score is on top
-
-        // --- Input Handling ---
-        this.input.on('pointerdown', this.jump, this); // Tap/Click to jump
-        this.jumpKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        // We'll check jumpKey.isDown in update for better responsiveness
-
-        // --- Initial Obstacle Spawn ---
-        this.scheduleNextObstacle();
-
-        // Enable debug drawing (useful during development)
-        // this.physics.world.createDebugGraphic();
-    }
-
-    update(time, delta) {
-        if (this.isGameOver) {
-            return; // Stop game logic if game over
-        }
-
-        // --- Scrolling Ground ---
-        // Move the ground texture leftwards. The amount depends on speed.
-        this.ground.tilePositionX += (this.obstacleSpeed / -60); // Adjust divisor for desired scroll speed relative to obstacles
-
-        // --- Scrolling Background (if using TileSprite) ---
-        // this.background.tilePositionX += 0.5; // Slower speed for parallax effect
-
-        // --- Player Horizontal Position ---
-        // Keep player stationary horizontally in this type of runner
-        this.player.setVelocityX(0);
-
-        // --- Handle Jump Input ---
-        // Check if space is down AND player is touching the ground
-        const isTouchingDown = this.player.body.blocked.down || this.player.body.touching.down;
-        if (Phaser.Input.Keyboard.JustDown(this.jumpKey) && isTouchingDown) {
-             this.jump();
-        }
-
-
-        // --- Obstacle Management ---
-        this.obstacles.getChildren().forEach(obstacle => {
-            // 1. Check for scoring: If obstacle passed player and hasn't scored yet
-            if (!obstacle.getData('hasScored') && obstacle.x + obstacle.width < this.player.x) {
-                this.increaseScore(10); // Award 10 points per obstacle
-                obstacle.setData('hasScored', true); // Mark as scored
-            }
-
-            // 2. Check for cleanup: If obstacle is off-screen to the left
-            if (obstacle.x < -obstacle.width) {
-                // console.log("Destroying off-screen obstacle");
-                this.obstacles.remove(obstacle, true, true); // Remove from group, destroy game object, remove from scene
-            }
-        });
-    }
-
-    jump() {
-        // Allow jump only if touching the ground/platform and not already game over
-        const isTouchingDown = this.player.body.blocked.down || this.player.body.touching.down;
-        if (isTouchingDown && !this.isGameOver) {
-            // console.log("Jump!");
-            this.player.setVelocityY(PLAYER_JUMP_VELOCITY);
-            // Add jump sound effect here if desired
-            // this.sound.play('jumpSound');
-        }
-    }
-
-    addObstacle() {
-        if (this.isGameOver) return; // Don't spawn if game ended while timer was pending
-
-        // console.log("Adding obstacle");
-        const obstacleY = GAME_HEIGHT - GROUND_HEIGHT - (this.textures.get('obstacle').getSourceImage().height / 2) + 5; // Position slightly above ground, adjust '+5' as needed
-        const obstacle = this.obstacles.create(
-            GAME_WIDTH + 50, // Start off-screen to the right
-            obstacleY,
-            'obstacle' // Use the loaded obstacle image key
-        );
-
-        // Set physics properties for the new obstacle
-        obstacle.setVelocityX(this.obstacleSpeed);
-        obstacle.body.setAllowGravity(false); // Already set on group, but can reinforce
-        obstacle.body.setImmovable(true);     // Already set on group
-        obstacle.setOrigin(0.5, 0.5);         // Center origin is often easier
-        // obstacle.body.setSize(width, height); // Optionally refine physics body size
-        obstacle.setData('hasScored', false); // Custom data flag for scoring
-        obstacle.setDepth(5); // Ensure obstacles are behind player if needed
-
-        // Optionally refresh body if scale/size changed significantly
-        // obstacle.refreshBody();
-
-        // Schedule the next obstacle spawn
-        this.scheduleNextObstacle();
-    }
-
-    scheduleNextObstacle() {
-        // Use a random delay for variety
-        const nextDelay = Phaser.Math.Between(OBSTACLE_SPAWN_DELAY_MIN, OBSTACLE_SPAWN_DELAY_MAX);
-        this.obstacleSpawnTimer = this.time.delayedCall(
-            nextDelay,
-            this.addObstacle, // Function to call
-            [], // Arguments to pass to the function
-            this // Context
-        );
-         // console.log(`Next obstacle in ${nextDelay}ms`);
-    }
-
-    increaseScore(amount) {
-        this.score += amount;
-        this.scoreText.setText('Score: ' + this.score);
-        // console.log("Score:", this.score);
-
-        // Optional: Increase difficulty based on score
-        // if (this.score % 100 === 0 && this.score > 0) {
-        //     this.obstacleSpeed -= 20; // Make obstacles faster
-        //     console.log("Increasing speed to:", this.obstacleSpeed);
-        //     // Optionally decrease spawn delay range here too
-        // }
-    }
-
-    handleCollision(player, obstacle) {
-        // Check if game over is already triggered to prevent multiple triggers
-        if (this.isGameOver) {
-            return;
-        }
-        console.log("RunnerScene: Collision detected! Game Over.");
-        this.isGameOver = true;
-
-        // Stop player and obstacles
-        this.physics.pause();
-
-         // Stop spawning new obstacles
-        if (this.obstacleSpawnTimer) {
-            this.obstacleSpawnTimer.remove();
-        }
-
-        // Make player flash red (visual feedback)
-        player.setTint(0xff0000);
-        this.time.delayedCall(500, () => {
-             player.clearTint();
-             // Transition to GameOverScene after a short delay
-             this.scene.start('GameOverScene', { score: this.score });
-        }, [], this);
-
-        // Add collision sound effect here if desired
-        // this.sound.play('collisionSound');
-    }
+  }
 }
-
 
 // -----------------------------------------------------------------------------
 // SCENE: GameOverScene
-// Displays final score and restart option
 // -----------------------------------------------------------------------------
 class GameOverScene extends Phaser.Scene {
-    constructor() {
-        super({ key: 'GameOverScene' });
-        this.finalScore = 0;
-    }
+  constructor() {
+    super({ key: 'GameOverScene' });
+  }
 
-    init(data) {
-        console.log("GameOverScene: Initializing with data:", data);
-        this.finalScore = data.score || 0;
-    }
+  init(data) {
+    this.finalScore = data.score || 0;
+  }
 
-    create() {
-        console.log("GameOverScene: Creating scene.");
-        // Game Over text
-        this.add.text(GAME_WIDTH / 2, 200, "Game Over!", {
-            fontSize: '64px',
-            fill: '#ff0000', // Red for emphasis
-            fontStyle: 'bold'
-        }).setOrigin(0.5);
+  create() {
+    this.add.text(200, 200, "Game Over!", {
+      fontSize: '48px',
+      fill: '#000',
+      fontStyle: 'bold'
+    });
 
-        // Final Score display
-        this.add.text(GAME_WIDTH / 2, 300, `Final Score: ${this.finalScore}`, {
-            fontSize: '40px',
-            fill: '#000'
-        }).setOrigin(0.5);
+    this.add.text(200, 300, `Final Score: ${this.finalScore}`, {
+      fontSize: '32px',
+      fill: '#000'
+    });
 
-        // Restart instructions
-        this.add.text(GAME_WIDTH / 2, 450, "Tap, Click, or Press SPACE to Restart", {
-            fontSize: '24px',
-            fill: '#333'
-        }).setOrigin(0.5);
+    this.add.text(160, 400, "Tap or Press SPACE to Restart", {
+      fontSize: '24px',
+      fill: '#000'
+    });
 
-        // Input to restart
-        const restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    // Restart on input
+    this.input.keyboard.on('keydown-SPACE', () => {
+      this.restartGame();
+    });
+    this.input.on('pointerdown', () => {
+      this.restartGame();
+    });
+  }
 
-        restartKey.once('down', this.restartGame, this); // Use 'once' to prevent multiple triggers
-        this.input.once('pointerdown', this.restartGame, this); // Use 'once'
-
-         // Ensure keys/input are re-enabled
-        this.input.keyboard.resetKeys();
-        this.input.enabled = true;
-    }
-
-    restartGame() {
-        console.log("GameOverScene: Restarting game.");
-        // Prevent restarting multiple times
-        if (this.scene.isActive()) {
-             // Disable input listeners for this scene before starting the next
-             this.input.keyboard.removeAllListeners();
-             this.input.removeAllListeners();
-             // Go back to the Title Screen
-             this.scene.start('TitleScene');
-        }
-    }
+  restartGame() {
+    this.scene.start('TitleScene');
+  }
 }
 
 // -----------------------------------------------------------------------------
 // GAME CONFIG & LAUNCH
 // -----------------------------------------------------------------------------
 const config = {
-    type: Phaser.AUTO, // Automatically choose WebGL or Canvas
-    width: GAME_WIDTH,
-    height: GAME_HEIGHT,
-    backgroundColor: "#87CEEB", // Background color for behind the canvas (if body bg isn't set)
-    parent: 'game-container', // Optional: ID of a div to contain the canvas
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: PLAYER_GRAVITY }, // Global gravity affects player
-            debug: false // Set to true to see physics bodies/velocities
-        }
-    },
-    scene: [PreloadScene, TitleScene, RunnerScene, GameOverScene] // Order matters! Preload first.
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  backgroundColor: "#87CEEB",
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 600 },
+      debug: false
+    }
+  },
+  scene: [TitleScene, RunnerScene, GameOverScene]
 };
 
-// Create the game instance
-window.onload = () => {
-    const game = new Phaser.Game(config);
-};
-
+new Phaser.Game(config);
 </script>
-
-<div id="game-container"></div>
 
 </body>
 </html>
